@@ -56,10 +56,10 @@ public class KernelFilter {
     }
 
     private static Color applyKernel(Picture p, double[][] kernel) {
-        if ((kernel.length != kernel[0].length) || (p.width() != kernel.length) || (p.height() != kernel[0].length)) {
+        /* if ((kernel.length != kernel[0].length) || (p.width() != kernel.length) || (p.height() != kernel[0].length)) {
             // StdOut.println("cannot apply kernel, mismatch of size...");
             return Color.BLACK;
-        }
+        } */
         int outRed = 0;
         int outGreen = 0;
         int outBlue = 0;
@@ -68,14 +68,14 @@ public class KernelFilter {
                 outRed += Math.round(p.get(i, j).getRed() * kernel[i][j]);
                 outGreen += Math.round(p.get(i, j).getGreen() * kernel[i][j]);
                 outBlue += Math.round(p.get(i, j).getBlue() * kernel[i][j]);
-                if (outRed < 0) outRed = 0;
-                if (outRed > 255) outRed = 255;
-                if (outGreen < 0) outGreen = 0;
-                if (outGreen > 255) outGreen = 255;
-                if (outBlue < 0) outBlue = 0;
-                if (outBlue > 255) outBlue = 255;
             }
         }
+        if (outRed < 0) outRed = 0;
+        if (outRed > 255) outRed = 255;
+        if (outGreen < 0) outGreen = 0;
+        if (outGreen > 255) outGreen = 255;
+        if (outBlue < 0) outBlue = 0;
+        if (outBlue > 255) outBlue = 255;
         // StdOut.println("red: " + outRed + ", green: " + outGreen + ", blue: " + outBlue);
         return new Color(outRed, outGreen, outBlue);
     }
@@ -116,18 +116,19 @@ public class KernelFilter {
     public static void main(String[] args)
     {
         Picture pic = new Picture("baboon.png");
-        // Picture picK = kernel(pic, lap);
-        pic.show();
-        Picture pic1 = motionBlur(pic);
-        pic1.show();
+        double[][] ident = {{0, 0, 0}, {0, 1, 0}, {0, 0, 0}};
+        Picture picId = kernel(pic, ident);
+        picId.show();
         Picture pic2 = gaussian(pic);
         pic2.show();
-        Picture pic3 = laplacian(pic);
-        pic3.show();
         Picture pic4 = sharpen(pic);
         pic4.show();
+        Picture pic3 = laplacian(pic);
+        pic3.show();
         Picture pic5 = emboss(pic);
         pic5.show();
+        Picture pic1 = motionBlur(pic);
+        pic1.show();
     }
 
 }
