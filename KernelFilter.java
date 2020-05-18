@@ -60,14 +60,23 @@ public class KernelFilter {
             // StdOut.println("cannot apply kernel, mismatch of size...");
             return Color.BLACK;
         } */
-        int outRed = 0;
-        int outGreen = 0;
-        int outBlue = 0;
-        for (int i = 0; i < kernel.length; i++) {
-            for (int j = 0; j < kernel[0].length; j++) {
-                outRed += Math.round(p.get(i, j).getRed() * kernel[i][j]);
-                outGreen += Math.round(p.get(i, j).getGreen() * kernel[i][j]);
-                outBlue += Math.round(p.get(i, j).getBlue() * kernel[i][j]);
+        double outRed = 0;
+        double outGreen = 0;
+        double outBlue = 0;
+        if (kernel.length == 3) {
+            for (int i = 0; i < kernel.length; i++) {
+                for (int j = 0; j < kernel[0].length; j++) {
+                    outRed += p.get(i, j).getRed() * kernel[i][j];
+                    outGreen += p.get(i, j).getGreen() * kernel[i][j];
+                    outBlue += p.get(i, j).getBlue() * kernel[i][j];
+                }
+            }
+        }
+        else if (kernel.length == 9) {
+            for (int i = 0; i < kernel.length; i++) {
+                 outRed += p.get(i, i).getRed() * kernel[i][i];
+                 outGreen += p.get(i, i).getGreen() * kernel[i][i];
+                 outBlue += p.get(i, i).getBlue() * kernel[i][i];
             }
         }
         if (outRed < 0) outRed = 0;
@@ -77,17 +86,20 @@ public class KernelFilter {
         if (outBlue < 0) outBlue = 0;
         if (outBlue > 255) outBlue = 255;
         // StdOut.println("red: " + outRed + ", green: " + outGreen + ", blue: " + outBlue);
-        return new Color(outRed, outGreen, outBlue);
+        return new Color((int) Math.round(outRed), (int) Math.round(outGreen), (int) Math.round(outBlue));
     }
 
     private static Picture selectArea(Picture picture, int size, int pcol, int prow) {
         // StdOut.println("selecting area of size " + size + "x" + size + " from positiion pcol=" + pcol + ", prow = " + prow + " out of picture " + picture.width() + "x" + picture.height());
         Picture pic = new Picture(size, size);
+        int hs = size / 2;
+        int dcol = hs - pcol;
+        int drow = hs - prow;
         for (int col = 0; col < pic.width(); col++)
             for (int row = 0; row < pic.height(); row++)
             {
-                int scol = col - ((size / 2) - pcol);
-                int srow = row - ((size / 2) - prow);
+                int scol = col - dcol;
+                int srow = row - drow;
                 // StdOut.println("initial: scol = " + scol + ", srow = " + srow);
                 if (scol < 0) {
                     scol = picture.width() - 2 - scol;
